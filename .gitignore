@@ -1,3 +1,10 @@
+# folders
+builds/
+libs/
+
+# CLion project files
+.idea
+cmake-build-*
 # Prerequisites
 *.d
 
