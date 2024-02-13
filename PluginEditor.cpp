@@ -21,11 +21,22 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         addAndMakeVisible(comp);
     }
     
+    const auto& params = processorRef.getParameters();
+    for (auto param : params) 
+    {
+        param->addListener(this);
+    }
+    startTimer(60);
     setSize (600, 400);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 {
+    const auto& params = processorRef.getParameters();
+    for (auto param : params)
+    {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -132,8 +143,17 @@ void AudioPluginAudioProcessorEditor::timerCallback()
 {
     if (parametersChanged.compareAndSetBool(false,true))
     {
-// update the monochain
-// signal a repaint
+        // update the monochain
+        auto chainSettings = getChainSettings(processorRef.apvts);
+        auto peakCoefficients = makePeakFilter(chainSettings,processorRef.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
+    
+        auto lowCutCoefficients = makeLowCutFilter(chainSettings, processorRef.getSampleRate());
+        auto highCutCoefficients = makeHighCutFilter(chainSettings, processorRef.getSampleRate());
+        updateCutFilter(monoChain.get<ChainPositions::LowCut>(), lowCutCoefficients, chainSettings.lowCutSlope);
+        updateCutFilter(monoChain.get<ChainPositions::HighCut>(), highCutCoefficients, chainSettings.highCutSlope);
+        // signal a repaint
+        repaint();
 
     }
 }
