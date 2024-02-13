@@ -2,6 +2,13 @@
 
 #include "PluginProcessor.h"
 
+struct CustomRotarySlider : juce::Slider
+{
+    CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    {
+        
+    }
+};
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor
 {
@@ -18,5 +25,14 @@ private:
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
 
+    CustomRotarySlider peakFreqSlider, 
+    peakGainSlider, 
+    peakQualitySlider, 
+    lowCutFreqSlider, 
+    highCutFreqSlider,
+    lowCutSlopeSlider,
+    highCutSlopeSlider;
+    
+    std::vector<juce::Component*> getComponents();
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };
