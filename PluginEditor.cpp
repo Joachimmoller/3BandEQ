@@ -115,8 +115,16 @@ void ResponseCurveComponent::paint (juce::Graphics& g)
     g.strokePath(responseCurve,PathStrokeType(2));
 }
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p), responseCurveComponent(processorRef),
-        peakFreqSliderAttachment(processorRef.apvts, "Peak Freq", peakFreqSlider),
+    : AudioProcessorEditor (&p), processorRef (p), 
+      peakFreqSlider(*processorRef.apvts.getParameter("Peak Freq"), "Hz"),
+      peakGainSlider(*processorRef.apvts.getParameter("Peak Gain"),"dB"),
+      peakQualitySlider(*processorRef.apvts.getParameter("Peak Quality"), ""),
+      lowCutFreqSlider(*processorRef.apvts.getParameter("LowCut Freq"), "Hz"),
+      highCutFreqSlider(*processorRef.apvts.getParameter("HighCut Freq"), "Hz"),
+      lowCutSlopeSlider(*processorRef.apvts.getParameter("LowCut Slope"),"dB"),
+      highCutSlopeSlider(*processorRef.apvts.getParameter("HighCut Slope"), "dB"),
+      responseCurveComponent(processorRef),
+      peakFreqSliderAttachment(processorRef.apvts, "Peak Freq", peakFreqSlider),
       peakGainSliderAttachment(processorRef.apvts,"Peak Gain", peakGainSlider),
       peakQualitySliderAttachment(processorRef.apvts,"Peak Quality", peakQualitySlider),
       lowCutFreqSliderAttachment(processorRef.apvts,"LowCut Freq", lowCutFreqSlider),
