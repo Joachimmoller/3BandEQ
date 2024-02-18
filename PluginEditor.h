@@ -12,21 +12,26 @@ struct LookAndFeel : juce::LookAndFeel_V4
                            juce::Slider&) override;
  };
 
-struct RotarySliderWithLabels : juce::Slider
-{
-    RotarySliderWithLabels(juce::RangedAudioParameter& rap, const juce::String& unitSuffix) : 
-    juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox),
-    param(&rap),
-    suffix(unitSuffix)
-    {
-        setLookAndFeel(&lnf);
-    }
-    
-    ~RotarySliderWithLabels()
-    {
-        setLookAndFeel(nullptr);
-    }
-    
+struct RotarySliderWithLabels : juce::Slider {
+  RotarySliderWithLabels(juce::RangedAudioParameter &rap,
+                         const juce::String &unitSuffix)
+      : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+                     juce::Slider::TextEntryBoxPosition::NoTextBox),
+        param(&rap), 
+        suffix(unitSuffix) {
+    setLookAndFeel(&lnf);
+  }
+
+  ~RotarySliderWithLabels() { setLookAndFeel(nullptr); }
+
+  struct LabelPos
+  {
+    float pos;
+    juce::String label;
+  };
+  
+  juce::Array<LabelPos> labels;
+
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds() const;
     int getTextHeight() const { return 14; }
@@ -55,11 +60,13 @@ private:
     juce::Atomic<bool> parametersChanged { false };
     
     MonoChain monoChain;
+    
+    void updateChain();
 };
 //==============================================================================
 class AudioPluginAudioProcessorEditor final : public juce::AudioProcessorEditor
-{
-public:
+{               
+public: 
     explicit AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor&);
     ~AudioPluginAudioProcessorEditor() override;
 
@@ -73,7 +80,7 @@ private:
     AudioPluginAudioProcessor& processorRef;
     
     RotarySliderWithLabels peakFreqSlider, 
-    peakGainSlider, 
+    peakGainSlider,                                                    
     peakQualitySlider, 
     lowCutFreqSlider, 
     highCutFreqSlider,

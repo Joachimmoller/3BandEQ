@@ -148,7 +148,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    updateFilters();  
+    updateFilters();
     juce::dsp::AudioBlock<float> block(buffer);
     
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -226,7 +226,7 @@ void AudioPluginAudioProcessor::updatePeakFilter(const ChainSettings& chainSetti
     updateCoefficients(rightChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
 }
 
-void /*AudioPluginAudioProcessor::*/updateCoefficients(Coefficients &old, const Coefficients &replacements) 
+void updateCoefficients(Coefficients &old, const Coefficients &replacements) 
 {
     *old = *replacements;
 }
