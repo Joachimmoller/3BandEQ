@@ -51,10 +51,37 @@ void LookAndFeel::drawRotarySlider(juce::Graphics & g,
       g.setColour(Colours::white);
       g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
   }
-  
 }
 
+void LookAndFeel::drawToggleButton(juce::Graphics &g, 
+                                   juce::ToggleButton &toggleButton, 
+                                   bool shouldDrawButtonAsHighlighted, 
+                                   bool shouldDrawButtonAsDown) {
+  using namespace juce;
 
+  Path powerButton;
+
+  auto bounds = toggleButton.getLocalBounds();
+  auto size = jmin(bounds.getWidth(), bounds.getHeight()) - 6;
+  auto r = bounds.withSizeKeepingCentre(size, size).toFloat();
+  float ang = 30.f;
+  size -= 6;
+
+  powerButton.addCentredArc(r.getCentreX(), r.getCentreY(), size * 0.5,
+                            size * 0.5, 0.f, degreesToRadians(ang),
+                            degreesToRadians(360.f - ang), true);
+
+  powerButton.startNewSubPath(r.getCentreX(), r.getY());
+  powerButton.lineTo(r.getCentre());
+
+  PathStrokeType pst(2, PathStrokeType::JointStyle::curved);
+
+  auto color = toggleButton.getToggleState() ? Colours::dimgrey : Colour(0u, 172u, 1);
+  g.setColour(color);
+  g.strokePath(powerButton, pst);
+  g.drawEllipse(r,2);
+  
+}
 
 //==============================================================================
 
@@ -535,10 +562,19 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         addAndMakeVisible(comp);
     }
     
+    lowCutBypassButton.setLookAndFeel(&lnf);
+    peakBypassButton.setLookAndFeel(&lnf);
+    highCutBypassButton.setLookAndFeel(&lnf);
+    
     setSize (600, 480);
 }
 
-AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor(){}
+AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
+{
+  lowCutBypassButton.setLookAndFeel(nullptr);
+  peakBypassButton.setLookAndFeel(nullptr);
+  highCutBypassButton.setLookAndFeel(nullptr);
+}
 
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
