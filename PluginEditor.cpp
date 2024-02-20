@@ -59,6 +59,8 @@ void LookAndFeel::drawToggleButton(juce::Graphics &g,
                                    bool shouldDrawButtonAsDown) {
   using namespace juce;
 
+  if (auto* pb = dynamic_cast<PowerButton*>(&toggleButton))
+  {
   Path powerButton;
 
   auto bounds = toggleButton.getLocalBounds();
@@ -80,6 +82,33 @@ void LookAndFeel::drawToggleButton(juce::Graphics &g,
   g.setColour(color);
   g.strokePath(powerButton, pst);
   g.drawEllipse(r,2);
+  }
+  
+  else if( auto* analyzerButton = dynamic_cast<AnalyzerButton*>(&toggleButton))
+  {
+    auto color = toggleButton.getToggleState() ? Colour(0u,172u,1) : Colours::dimgrey;
+    g.setColour(color);
+    
+    auto bounds = toggleButton.getLocalBounds();
+    g.drawRect(bounds);
+    
+    auto insetRect = bounds.reduced(4);
+    
+    Path randomPath;
+    
+    Random r;
+    
+    randomPath.startNewSubPath(insetRect.getX(), 
+                               insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+
+    for ( auto x = insetRect.getX() + 1; x < insetRect.getRight(); x += 2)
+    {
+      randomPath.lineTo(x, insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+    }
+    
+    g.strokePath(randomPath, PathStrokeType(1.f));
+    
+  }
   
 }
 
@@ -565,6 +594,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     lowCutBypassButton.setLookAndFeel(&lnf);
     peakBypassButton.setLookAndFeel(&lnf);
     highCutBypassButton.setLookAndFeel(&lnf);
+    analyzerEnabledButton.setLookAndFeel(&lnf);
     
     setSize (600, 480);
 }
@@ -574,6 +604,7 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
   lowCutBypassButton.setLookAndFeel(nullptr);
   peakBypassButton.setLookAndFeel(nullptr);
   highCutBypassButton.setLookAndFeel(nullptr);
+  analyzerEnabledButton.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -591,6 +622,16 @@ void AudioPluginAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto bounds = getLocalBounds();
+    
+    auto analyzerEnabledArea = bounds.removeFromTop(25);
+    analyzerEnabledArea.setWidth(100);
+    analyzerEnabledArea.setX(25);
+    analyzerEnabledArea.removeFromTop(2);
+    
+    analyzerEnabledButton.setBounds(analyzerEnabledArea);
+    
+    bounds.removeFromTop(5);
+    
     float hRatio = 25.f/100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio);
     
